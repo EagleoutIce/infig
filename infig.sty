@@ -64,13 +64,13 @@
 \def\infig@prelude{%
    \newcommand\Axis[1][1]{\pgfonlayer{\infig@axis@layer}\draw[very thick,infig@lines,infig@axis@color] (0,1) |- (##1,0);\endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
    \newcommand\LabelAxis[3][1]{\pgfonlayer{\infig@axis@layer}%
-      \draw[very thick,infig@lines,infig@axis@color] (0,0) -- (##1,0) node[above left,inner xsep=\z@,black] {\bfseries##2};%
-      \draw[very thick,infig@lines,infig@axis@color] (0,1) node[below right,inner xsep=\z@,black] {\bfseries##3} -- (##1,1);%
+      \draw[very thick,infig@lines,infig@axis@color] (0,0) -- (##1,0) node[above left,inner xsep=\z@,black] {\LARGE##2};%
+      \draw[very thick,infig@lines,infig@axis@color] (0,1) node[below right,inner xsep=\z@,black] {\LARGE##3} -- (##1,1);%
    \endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
    \newcommand\TAxis[1][1]{\pgfonlayer{\infig@axis@layer}\draw[very thick,infig@lines,infig@axis@color] (0,0) -- (0,1) (0,.5) -- (##1,.5);\endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
-   \def\Line{\draw[line width=2.4pt,paletteA,infig@lines]}%
-   \def\LineB{\draw[line width=2.4pt,paletteB,infig@lines]}%
-   \def\LineGhost{\draw[line width=2.4pt,infig@lines,infig@ghost@color]}%
+   \def\Line{\draw[line width=2.6pt,paletteA,infig@lines]}%
+   \def\LineB{\draw[line width=2.6pt,paletteB,infig@lines]}%
+   \def\LineGhost{\draw[line width=2.6pt,infig@lines,infig@ghost@color]}%
    \def\LongAxis{\Axis[1.33]}%
    \def\Circle(##1){\fill (##1) circle[radius=3.9pt];}%
    \def\CircleGhost(##1){\fill[infig@ghost@color] (##1) circle[radius=3.4pt];}%
