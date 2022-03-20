@@ -1,0 +1,95 @@
+\ProvidesPackage{lilly-infig}[2022/03/20 v1.0.0 Sparklines as in-line-figures in LaTeX using TikZ]
+
+\newif\if@infig@cpalette@
+\DeclareOption{cpalette}{\@infig@cpalette@true}
+\DeclareOption{nocpalette}{\@infig@cpalette@false}
+\ProcessOptions*
+
+
+\RequirePackage{tikz}
+% todo: ensure the background layer exists in infig with set layers
+% todo: add foreground
+\usetikzlibrary{backgrounds}
+
+\newif\if@infig@clip@
+\newif\if@infig@smash@
+\def\infig@clip@code{}
+\newdimen\infig@height
+\newdimen\infig@raise
+\def\infig@axis@layer{background}
+\newif\if@infig@axis@clip@
+
+\pgfqkeys{/infig}{
+  /infig/.search also    ={/tikz,/pgf},
+  height/.code           = \setlength\infig@height{#1},
+  raise/.code            = \setlength\infig@raise{#1},
+  fit/.is choice,
+  fit/scale/.code        = \@infig@clip@false,
+  fit/clip/.code         = \@infig@clip@true,
+  axis on/.code          = \def\infig@axis@layer{#1},
+  axis color/.code       = \colorlet{infig@axis@color}{#1},
+  ghost color/.code       = \colorlet{infig@ghost@color}{#1},
+  axis clip/.is if       = @infig@axis@clip@,
+  smash/.is if           = @infig@smash@,
+  clip anchor/.is choice,
+  clip anchor/center/.code = {\def\infig@clip@code{\clip (0,-.5\infig@height) rectangle (0,.5\infig@height);}},
+  clip anchor/bottom/.code = {\def\infig@clip@code{\clip (0,0\infig@height) rectangle (0,\infig@height);}},
+  clip anchor/top/.code = {\def\infig@clip@code{\clip (0,0\infig@height) rectangle (0,-\infig@height);}},
+  defaults/.style={%
+   height=\dimexpr.7\ht\strutbox+.7\dp\strutbox\relax, fit=scale,%
+   raise=\z@, axis on=background, smash=true, user defaults,
+   axis color=lightgray, axis clip=false, ghost color=lightgray},
+  user defaults/.style = {}
+}
+
+\def\infigdefaults#1{\pgfqkeys{/infig}{user defaults/.style={#1}}}
+\def\infigdefaultsappend#1{\pgfqkeys{/infig}{user defaults/.append style={#1}}}
+
+\tikzset{%
+   infig@base/.style={baseline={([yshift={\dimexpr-\ht\strutbox-.6\dp\strutbox}]current bounding box.center)}},
+   infig@lines/.style={line cap=round,line join=round},
+}
+
+\def\infig@downsize#1#2{%
+  \savebox0{#2}%
+  \dimen@=\ht0\relax % store the height
+  \advance\dimen@ by \dp0\relax % append the depth
+  \ifdim\dimen@>#1\relax % too high?
+    \resizebox*!{#1}{\usebox0}%
+  \else\usebox0\fi
+}
+
+% todo adapt
+\def\infig@prelude{%
+   \newcommand\Axis[1][1]{\pgfonlayer{\infig@axis@layer}\draw[very thick,infig@lines,infig@axis@color] (0,1) |- (##1,0);\endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
+   \newcommand\LabelAxis[3][1]{\pgfonlayer{\infig@axis@layer}%
+      \draw[very thick,infig@lines,infig@axis@color] (0,0) -- (##1,0) node[above left,inner xsep=\z@,black] {\bfseries##2};%
+      \draw[very thick,infig@lines,infig@axis@color] (0,1) node[below right,inner xsep=\z@,black] {\bfseries##3} -- (##1,1);%
+   \endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
+   \newcommand\TAxis[1][1]{\pgfonlayer{\infig@axis@layer}\draw[very thick,infig@lines,infig@axis@color] (0,0) -- (0,1) (0,.5) -- (##1,.5);\endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
+   \def\Line{\draw[line width=2.4pt,paletteA,infig@lines]}%
+   \def\LineB{\draw[line width=2.4pt,paletteB,infig@lines]}%
+   \def\LineGhost{\draw[line width=2.4pt,infig@lines,infig@ghost@color]}%
+   \def\LongAxis{\Axis[1.33]}%
+   \def\Circle(##1){\fill (##1) circle[radius=3.9pt];}%
+   \def\CircleGhost(##1){\fill[infig@ghost@color] (##1) circle[radius=3.4pt];}%
+}
+
+\def\infig@@downsize#1{\infig@downsize{\infig@height}{#1}}
+\newcommand\infig[2][]{%
+   \pgfqkeys{/infig}{defaults, #1}%
+   \if@infig@smash@\expandafter\smash\fi{%
+      \raisebox\infig@raise{%
+         % atm; we do only downsize if there is no clip
+         \if@infig@clip@\else\expandafter\infig@@downsize\fi{%
+            \infig@prelude
+            \tikz[infig@base]{%
+               \if@infig@clip@\infig@clip@code\fi
+               #2;
+            }%
+         }%
+      }%
+   }%
+}
+
+\endinput
