@@ -64,8 +64,8 @@
 \def\infig@prelude{%
    \newcommand\Axis[1][1]{\pgfonlayer{\infig@axis@layer}\draw[very thick,infig@lines,infig@axis@color] (0,1) |- (##1,0);\endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
    \newcommand\LabelAxis[3][1]{\pgfonlayer{\infig@axis@layer}%
-      \draw[very thick,infig@lines,infig@axis@color] (0,0) -- (##1,0) node[above left,inner xsep=\z@,black] {\LARGE##2};%
-      \draw[very thick,infig@lines,infig@axis@color] (0,1) node[below right,inner xsep=\z@,black] {\LARGE##3} -- (##1,1);%
+      \draw[very thick,infig@lines,infig@axis@color] (0,0) -- (##1,0) node[above left,inner xsep=\z@,black] {\Large##2};%
+      \draw[very thick,infig@lines,infig@axis@color] (0,1) node[below right,inner xsep=\z@,black] {\Large##3} -- (##1,1);%
    \endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
    \newcommand\TAxis[1][1]{\pgfonlayer{\infig@axis@layer}\draw[very thick,infig@lines,infig@axis@color] (0,0) -- (0,1) (0,.5) -- (##1,.5);\endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
    \def\Line{\draw[line width=2.6pt,paletteA,infig@lines]}%
@@ -77,17 +77,18 @@
 }
 
 \def\infig@@downsize#1{\infig@downsize{\infig@height}{#1}}
-\newcommand\infig[2][]{%
+\def\infig{\@ifstar\infig@raw\infig@tikz}
+
+\newcommand\infig@tikz[2][]{\infig@raw{\tikz[infig@base]{\if@infig@clip@\infig@clip@code\fi#2;}}}
+
+\newcommand\infig@raw[2][]{%
    \pgfqkeys{/infig}{defaults, #1}%
    \if@infig@smash@\expandafter\smash\fi{%
       \raisebox\infig@raise{%
          % atm; we do only downsize if there is no clip
          \if@infig@clip@\else\expandafter\infig@@downsize\fi{%
             \infig@prelude
-            \tikz[infig@base]{%
-               \if@infig@clip@\infig@clip@code\fi
-               #2;
-            }%
+            #2\relax
          }%
       }%
    }%
