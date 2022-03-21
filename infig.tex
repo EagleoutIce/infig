@@ -1,10 +1,13 @@
 \errorcontextlines9999
 \documentclass{article}
 
-\usepackage{color-palettes}
-\usepackage[cpalette]{infig}
+\usepackage{infig}
 
+\usepackage{pgfplots}
 
 \begin{document}
-This is an example text to showcase the~\infig{\LabelAxis[1.5]{0}{50k}\Line (0,0)--(1.5,1.1);} infigs.
+This is an example text to showcase the~\infig{\LabelAxis[4]{0}{50k}\Line(0,.00016)--(.8,.38)--(1,.38)--(2,.64)--(3.15,1.1)--(3.65,.9)--(4,1)} infigs.
+You can use everything inside, even arbitrary~\infig*{\textit{super~text}} and pgfplots (package required)~\infig*{\tikz{\begin{axis}
+\addplot+[ybar] coordinates {(0,4) (1,1) (2,3) (3,1) (4,2)};
+\end{axis}}}~--- although it would be recommended to create a custom, more readable style.
 \end{document}

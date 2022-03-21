@@ -11,7 +11,6 @@
 % todo: add foreground
 \usetikzlibrary{backgrounds}
 
-% TODO: cpalette switch has to do something
 \newif\if@infig@clip@
 \newif\if@infig@smash@
 \def\infig@clip@code{}
@@ -51,6 +50,14 @@
    infig@lines/.style={line cap=round,line join=round},
 }
 
+\def\infig@set@colors#1#2{\def\infig@primary{#1}\def\infig@secondary{#2}}
+\if@infig@cpalette@
+   \infig@set@colors{paletteA}{paletteB}
+\else
+   \infig@set@colors{blue}{red}
+\fi
+\let\infigsetcolors\infig@set@colors
+
 \def\infig@downsize#1#2{%
   \savebox0{#2}%
   \dimen@=\ht0\relax % store the height
@@ -60,7 +67,6 @@
   \else\usebox0\fi
 }
 
-% todo adapt
 \def\infig@prelude{%
    \newcommand\Axis[1][1]{\pgfonlayer{\infig@axis@layer}\draw[very thick,infig@lines,infig@axis@color] (0,1) |- (##1,0);\endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
    \newcommand\LabelAxis[3][1]{\pgfonlayer{\infig@axis@layer}%
@@ -68,8 +74,8 @@
       \draw[very thick,infig@lines,infig@axis@color] (0,1) node[below right,inner xsep=\z@,black] {\Large##3} -- (##1,1);%
    \endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
    \newcommand\TAxis[1][1]{\pgfonlayer{\infig@axis@layer}\draw[very thick,infig@lines,infig@axis@color] (0,0) -- (0,1) (0,.5) -- (##1,.5);\endpgfonlayer\if@infig@axis@clip@\clip(0,0) rectangle (##1,1);\fi}%
-   \def\Line{\draw[line width=2.6pt,paletteA,infig@lines]}%
-   \def\LineB{\draw[line width=2.6pt,paletteB,infig@lines]}%
+   \def\Line{\draw[line width=2.6pt,\infig@primary,infig@lines]}%
+   \def\LineB{\draw[line width=2.6pt,\infig@secondary,infig@lines]}%
    \def\LineGhost{\draw[line width=2.6pt,infig@lines,infig@ghost@color]}%
    \def\LongAxis{\Axis[1.33]}%
    \def\Circle(##1){\fill (##1) circle[radius=3.9pt];}%
